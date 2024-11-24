@@ -54,5 +54,3 @@ node index.js
 - 用户头像 (Gravatar)
 
 访问 `http://localhost:4000/api` 使用 GraphQL Playground 测试 API。
-
-```
