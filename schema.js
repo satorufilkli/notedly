@@ -16,7 +16,9 @@ export default gql`
 
   type Query {
     notes: [Note!]!
-    showUsers: [User!]!
+    user(username: String!): User
+    users: [User!]!
+    me: User
   }
 
   type Mutation {
