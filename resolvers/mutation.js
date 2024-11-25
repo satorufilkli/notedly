@@ -135,6 +135,69 @@ const Mutation = {
       return false;
     }
   },
+
+  /**
+   * 切换笔记的收藏状态
+   * @param {Object} parent - GraphQL parent 对象
+   * @param {Object} args - 传入的参数对象
+   * @param {string} args.id - 要切换收藏状态的笔记ID
+   * @param {Object} context - GraphQL context 对象
+   * @param {Object} context.models - 数据库模型
+   * @param {Object} context.user - 当前用户信息
+   * @returns {Promise<Object>} 更新后的笔记对象
+   */
+  toggleFavorite: async (parent, { id }, { models, user }) => {
+    // 检查用户是否已认证登录
+    checkAuth(user);
+
+    // 查找对应 ID 的笔记
+    let noteCheck = await models.Note.findById(id);
+
+    // 检查当前用户是否已经收藏过这条笔记
+    // indexOf 返回用户 ID 在 favoritedBy 数组中的位置
+    // 如果 >= 0 表示已收藏，-1 表示未收藏
+    const hasUser = noteCheck.favoritedBy.indexOf(user.id);
+
+    if (hasUser >= 0) {
+      // 如果用户已收藏，则取消收藏
+      return await models.Note.findByIdAndUpdate(
+        id,
+        {
+          // 从 favoritedBy 数组中移除用户 ID
+          $pull: {
+            favoritedBy: mongoose.Types.ObjectId(user.id),
+          },
+          // 收藏数量减 1
+          $inc: {
+            favoriteCount: -1,
+          },
+        },
+        {
+          // 返回更新后的文档，而不是更新前的
+          new: true,
+        },
+      );
+    } else {
+      // 如果用户未收藏，则添加收藏
+      return await models.Note.findByIdAndUpdate(
+        id,
+        {
+          // 将用户 ID 添加到 favoritedBy 数组
+          $push: {
+            favoritedBy: mongoose.Types.ObjectId(user.id),
+          },
+          // 收藏数量加 1
+          $inc: {
+            favoriteCount: 1,
+          },
+        },
+        {
+          // 返回更新后的文档，而不是更新前的
+          new: true,
+        },
+      );
+    }
+  },
 };
 
 export default Mutation;
