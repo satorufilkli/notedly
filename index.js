@@ -2,6 +2,11 @@
 import { ApolloServer } from "apollo-server-express";
 import express from "express";
 import jwt from "jsonwebtoken";
+import helmet from "helmet";
+import cors from "cors";
+import depthLimit from "graphql-depth-limit";
+import { createComplexityLimitRule } from "graphql-validation-complexity";
+
 // 导入环境变量配置
 import "dotenv/config";
 
@@ -17,6 +22,8 @@ import resolvers from "./resolvers/index.js";
 
 // 创建 Express 应用实例
 const app = express();
+app.use(helmet());
+app.use(cors());
 
 // 连接数据库
 connect(DB_HOST);
@@ -41,6 +48,7 @@ const getUser = (token) => {
 const server = new ApolloServer({
   typeDefs, // GraphQL schema 类型定义
   resolvers, // GraphQL resolvers 解析函数
+  validationRules: [depthLimit(5), createComplexityLimitRule(1000)],
   // 设置 context，每个请求都会执行
   context: ({ req }) => {
     // 从请求头获取 token
