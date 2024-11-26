@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { AuthenticationError, ForbiddenError } from "apollo-server-express";
 import gravatar from "../util/gravatar.js";
 import { checkAuth, checkNoteOwner } from "../util/auth.js";
+import mongoose from "mongoose";
 
 const Mutation = {
   /**
@@ -152,20 +153,18 @@ const Mutation = {
 
     // 查找对应 ID 的笔记
     let noteCheck = await models.Note.findById(id);
-
     // 检查当前用户是否已经收藏过这条笔记
-    // indexOf 返回用户 ID 在 favoritedBy 数组中的位置
-    // 如果 >= 0 表示已收藏，-1 表示未收藏
-    const hasUser = noteCheck.favoritedBy.indexOf(user.id);
+    // 使用 some 和 equals 来检查用户 ID
+    const hasUser = noteCheck.favoritedBy.some((id) => id.equals(user.id));
 
-    if (hasUser >= 0) {
+    if (hasUser) {
       // 如果用户已收藏，则取消收藏
       return await models.Note.findByIdAndUpdate(
         id,
         {
           // 从 favoritedBy 数组中移除用户 ID
           $pull: {
-            favoritedBy: mongoose.Types.ObjectId(user.id),
+            favoritedBy: new mongoose.Types.ObjectId(user.id),
           },
           // 收藏数量减 1
           $inc: {
@@ -184,7 +183,7 @@ const Mutation = {
         {
           // 将用户 ID 添加到 favoritedBy 数组
           $push: {
-            favoritedBy: mongoose.Types.ObjectId(user.id),
+            favoritedBy: new mongoose.Types.ObjectId(user.id),
           },
           // 收藏数量加 1
           $inc: {

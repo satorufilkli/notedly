@@ -3,7 +3,7 @@ export default gql`
   type Note {
     id: ID!
     content: String!
-    author: String!
+    author: User!
     favoriteCount: Int!
     favoritedBy: [User!]
   }
@@ -19,6 +19,7 @@ export default gql`
 
   type Query {
     notes: [Note!]!
+    note(id: ID!): Note!
     user(username: String!): User
     users: [User!]!
     me: User
