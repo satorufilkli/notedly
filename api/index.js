@@ -48,6 +48,7 @@ const getUser = (token) => {
 const server = new ApolloServer({
   typeDefs, // GraphQL schema 类型定义
   resolvers, // GraphQL resolvers 解析函数
+  cache: "bounded",
   validationRules: [depthLimit(5), createComplexityLimitRule(1000)],
   // 设置 context，每个请求都会执行
   context: ({ req }) => {
