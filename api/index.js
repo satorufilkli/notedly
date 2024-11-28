@@ -4,6 +4,7 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import helmet from "helmet";
 import cors from "cors";
+// import path from "path";
 import depthLimit from "graphql-depth-limit";
 import { createComplexityLimitRule } from "graphql-validation-complexity";
 
@@ -24,6 +25,36 @@ import resolvers from "./resolvers/index.js";
 const app = express();
 app.use(helmet());
 app.use(cors());
+
+app.get("/", (req, res) => {
+  res.send(`
+     <!DOCTYPE html>
+     <html lang="en">
+     <head>
+       <meta charset="UTF-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <title>Welcome</title>
+       <style>
+         * { margin: 0; padding: 0; box-sizing: border-box; }
+         body { font-family: 'Arial', sans-serif; background: #f0f4f8; height: 100vh; display: flex; justify-content: center; align-items: center; color: #333; }
+         .container { text-align: center; background: #fff; border-radius: 10px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); padding: 40px; max-width: 500px; width: 100%; animation: fadeIn 2s ease-out; }
+         h1 { font-size: 3rem; color: #3498db; margin-bottom: 20px; }
+         p { font-size: 1.2rem; color: #555; margin-bottom: 40px; }
+         .cta-button { background-color: #3498db; color: white; border: none; padding: 15px 30px; font-size: 1.1rem; border-radius: 5px; cursor: pointer; transition: background-color 0.3s; }
+         .cta-button:hover { background-color: #2980b9; }
+         @keyframes fadeIn { 0% { opacity: 0; transform: translateY(30px); } 100% { opacity: 1; transform: translateY(0); } }
+       </style>
+     </head>
+     <body>
+       <div class="container">
+         <h1>Welcome to the Notedly API!</h1>
+         <p>Explore the powerful features and start interacting with the data!</p>
+         <button class="cta-button" onclick="window.location.href='/api'">Get Started</button>
+       </div>
+     </body>
+     </html>
+   `);
+});
 
 // 连接数据库
 connect(DB_HOST);
