@@ -48,7 +48,7 @@ app.get("/", (req, res) => {
        <div class="container">
          <h1>Welcome to the Notedly API!</h1>
          <p>Explore the powerful features and start interacting with the data!</p>
-         <button class="cta-button" onclick="window.location.href='/api'">Get Started</button>
+         <a href="/api" class="cta-button">Get Started</a>
        </div>
      </body>
      </html>
