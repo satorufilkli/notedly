@@ -4,7 +4,6 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import helmet from "helmet";
 import cors from "cors";
-// import path from "path";
 import depthLimit from "graphql-depth-limit";
 import { createComplexityLimitRule } from "graphql-validation-complexity";
 

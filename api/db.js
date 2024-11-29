@@ -1,24 +1,31 @@
 import mongoose from "mongoose";
 
-// 设置 MongoDB 连接事件监听器
-function setupEventListeners() {
-  mongoose.connection.on("connected", () => {
-    console.log("MongoDB connected successfully");
-  });
-  mongoose.connection.on("disconnected", () => {
-    console.log("MongoDB disconnected");
-  });
-  mongoose.connection.on("error", (error) => {
-    console.error("MongoDB connection error:", error);
-  });
+// 设置 MongoDB 状态查看器
+export function checkState() {
+  const state = mongoose.connection.readyState;
+  switch (state) {
+    case 0:
+      console.log("MongoDB is disconnected");
+      break;
+    case 1:
+      console.log("MongoDB is connected");
+      break;
+    case 2:
+      console.log("MongoDB is connecting");
+      break;
+    case 3:
+      console.log("MongoDB is disconnecting");
+      break;
+    default:
+      console.log("Unknown connection state");
+  }
 }
 
 // 连接到 MongoDB
 export async function connect(DB_HOST) {
   try {
-    setupEventListeners();
     await mongoose.connect(DB_HOST);
-    console.log("Database connection attempt completed");
+    checkState();
   } catch (error) {
     console.error("Failed to connect to MongoDB:", error);
     throw error;
@@ -29,7 +36,6 @@ export async function connect(DB_HOST) {
 export async function disconnect() {
   try {
     await mongoose.connection.close();
-    console.log("MongoDB connection closed");
   } catch (error) {
     console.error("Error closing MongoDB connection:", error);
     throw error;
